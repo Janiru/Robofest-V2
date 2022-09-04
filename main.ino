@@ -2,16 +2,12 @@
 QTRSensors qtr;
 
 #define SETPOINT    3500  // The goal for readLine (center)
-#define KP          0.06   // The P value in PID
-#define KD          0.6     // The D value in PID
+#define KP          0.0675   // The P value in PID
+#define KD          1.7   // The D value in PID
 #define L_MOTOR     8     // Left motor pin
 #define R_MOTOR     3    // Right motor pin
-#define MAX_SPEED   200   // The max speed to set motors to
-#define SET_SPEED   200   // The goal speed to set motors to
-#define MIN_SPEED   0     // The min speed to set motors to
 #define NUM_SENSORS 8     // The number of QTR sensors
 #define TIMEOUT     2500  // Timeout for the QTR sensors to go low
-#define EMITTER_PIN 2     // Emitter pin for QTR sensor emitters
 
 int LmF = 6;
 int LmB = 7;
@@ -21,12 +17,17 @@ int RmF = 4;
 int RmB = 5;
 int RmS = 3;
 
+int buzzer = 9;
+
+int baseSpeed = 180;
+int maxSpeed = 225;
+int minVals[] = {696 , 644 , 688, 600, 600, 796 , 744 , 948 };
+
 // PID **************************************
 int lastError = 0;  // For storing PID error
 
 
 unsigned int sensorValues[NUM_SENSORS];   // For sensor values of readLine()
-
 void setup() {
   qtr.setTypeRC();
   qtr.setSensorPins((const uint8_t[]) {
@@ -38,7 +39,7 @@ void setup() {
 
 
   digitalWrite(LED_BUILTIN, HIGH);
-  for (uint16_t i = 0; i < 200; i++)
+  for (uint16_t i = 0; i < 1; i++)
   {
     qtr.calibrate();
   }
@@ -51,7 +52,19 @@ void setup() {
   pinMode(RmF, OUTPUT);
   pinMode(RmB, OUTPUT);
   pinMode(RmS, OUTPUT);
+
+  pinMode(buzzer, HIGH);
+
   Serial.begin(9600);
+
+  /****** Hard coded calibrations ******/
+
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    qtr.calibrationOn.minimum[i] = minVals[i];
+    qtr.calibrationOn.maximum[i] = 2500;
+  }
+  /****** Hard coded calibrations ******/
 }
 
 void loop() {
@@ -66,56 +79,33 @@ void loop() {
 
   // Record the current error for the next iteration
   lastError = error;
-  mpower(150 - adjust, 150 + adjust);
+  mpower(baseSpeed - adjust, baseSpeed + adjust);
 
-  if(sensorValues[7] > 920 || sensorValues[6] > 920){
-    if(sensorValues[3] > 920 || sensorValues[4]> 920){
-      mpower(200,-200);
-      delay(260);
-    }
+  /******************** Increasing Speed when line is centered********************/
+
+  if (linePos > 3000 && linePos < 4000) {
+    baseSpeed = maxSpeed;
+  }
+  else {
+    baseSpeed = 180;
   }
 
 
+
+  /******************** Dead End ********************/
+
+  if (sensorValues[0] < 300 && sensorValues[1] < 300 && sensorValues[2] < 300 &&
+      sensorValues[3] < 300 && sensorValues[4] < 300 && sensorValues[5] < 300 &&
+      sensorValues[6] < 300 && sensorValues[7] < 300) {
+    mpower(210, -210);
+    delay(10);
+  }
+
+ /******************** Right Turn  ********************/
+
+if (sensorValues[6] > 920 || sensorValues[7] > 920){
+  if ( sensorValues[3] > 920 || sensorValues[4] > 920){
+    turnRight();
+  }
 }
-
-void mpower(int lm, int rm) {
-
-  if (lm > 255) {
-    lm = 255;
-  }
-  if (lm == 0) {
-    digitalWrite(LmS, LOW);
-  }
-
-  if (lm > 0 && lm <= 255) {
-    digitalWrite(LmF, HIGH);
-    digitalWrite(LmB, LOW);
-    analogWrite(LmS, lm);
-  }
-
-  else if (lm < 0) {
-    digitalWrite(LmB, HIGH);
-    digitalWrite(LmF, LOW);
-    analogWrite(LmS, lm * -1);
-  }
-
-  if (rm > 255) {
-    rm = 255;
-  }
-
-  if (rm == 0) {
-    digitalWrite(RmS, LOW);
-  }
-
-  if (rm > 0 && rm <= 255) {
-    digitalWrite(RmF, HIGH);
-    digitalWrite(RmB, LOW);
-    analogWrite(RmS, rm);
-  }
-  else if (rm < 0) {
-    digitalWrite(RmB, HIGH);
-    digitalWrite(RmF, LOW);
-    analogWrite(RmS, rm * -1);
-  }
-
 }
