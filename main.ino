@@ -21,7 +21,7 @@ int buzzer = 9;
 
 int baseSpeed = 180;
 int maxSpeed = 225;
-int minVals[] = {696 , 644 , 688, 600, 600, 796 , 744 , 948 };
+int minVals[] = {412, 464, 464 , 420, 420, 560, 560, 652};
 
 // PID **************************************
 int lastError = 0;  // For storing PID error
@@ -39,7 +39,7 @@ void setup() {
 
 
   digitalWrite(LED_BUILTIN, HIGH);
-  for (uint16_t i = 0; i < 1; i++)
+  for (uint16_t i = 0; i < 200; i++)
   {
     qtr.calibrate();
   }
@@ -59,11 +59,11 @@ void setup() {
 
   /****** Hard coded calibrations ******/
 
-  for (uint8_t i = 0; i < 8; i++)
-  {
-    qtr.calibrationOn.minimum[i] = minVals[i];
-    qtr.calibrationOn.maximum[i] = 2500;
-  }
+  //  for (uint8_t i = 0; i < 8; i++)
+  //  {
+  //    qtr.calibrationOn.minimum[i] = minVals[i];
+  //    qtr.calibrationOn.maximum[i] = 2500;
+  //  }
   /****** Hard coded calibrations ******/
 }
 
@@ -101,11 +101,24 @@ void loop() {
     delay(10);
   }
 
- /******************** Right Turn  ********************/
+  /******************** Right Turn  ********************/
 
-if (sensorValues[6] > 920 || sensorValues[7] > 920){
-  if ( sensorValues[3] > 920 || sensorValues[4] > 920){
-    turnRight();
+  if (sensorValues[6] > 920 || sensorValues[7] > 920) {
+    if (sensorValues[0] < 300 || sensorValues[1] < 300) {
+      if ( sensorValues[3] > 920 || sensorValues[4] > 920) {
+        turnRight();
+      }
+    }
   }
-}
+
+  /******************** Left Turn if front is null  ********************/
+
+  if (sensorValues[0] > 920 || sensorValues[1] > 920) {
+    if (sensorValues[6] < 300 || sensorValues[7] < 300) {
+      if ( sensorValues[3] > 920 || sensorValues[4] > 920) {
+        turnLeft();
+      }
+    }
+  }
+
 }
