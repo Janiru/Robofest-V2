@@ -1,14 +1,11 @@
 #include <QTRSensors.h>
 QTRSensors qtr;
 
-#define SETPOINT    3500  // The goal for readLine (center)
-#define KP          0.0675   // The P value in PID
-#define KD          1.7   // The D value in PID
-#define L_MOTOR     8     // Left motor pin
-#define R_MOTOR     3    // Right motor pin
-#define NUM_SENSORS 8     // The number of QTR sensors
-#define TIMEOUT     2500  // Timeout for the QTR sensors to go low
-
+#define SETPOINT    3500
+#define KP          0.0675
+#define KD         1.8
+#define NUM_SENSORS 8
+#define TIMEOUT     2500
 int LmF = 6;
 int LmB = 7;
 int LmS = 8;
@@ -17,10 +14,10 @@ int RmF = 4;
 int RmB = 5;
 int RmS = 3;
 
-int buzzer = 9;
+int buzzer = 11;
 
-int baseSpeed = 180;
-int maxSpeed = 225;
+int baseSpeed = 190;
+int maxSpeed = 230;
 int minVals[] = {412, 464, 464 , 420, 420, 560, 560, 652};
 
 // PID **************************************
@@ -65,6 +62,7 @@ void setup() {
   //    qtr.calibrationOn.maximum[i] = 2500;
   //  }
   /****** Hard coded calibrations ******/
+
 }
 
 void loop() {
@@ -87,7 +85,7 @@ void loop() {
     baseSpeed = maxSpeed;
   }
   else {
-    baseSpeed = 180;
+    baseSpeed = 190;
   }
 
 
@@ -97,7 +95,7 @@ void loop() {
   if (sensorValues[0] < 300 && sensorValues[1] < 300 && sensorValues[2] < 300 &&
       sensorValues[3] < 300 && sensorValues[4] < 300 && sensorValues[5] < 300 &&
       sensorValues[6] < 300 && sensorValues[7] < 300) {
-    mpower(210, -210);
+    mpower(230, -230);
     delay(10);
   }
 

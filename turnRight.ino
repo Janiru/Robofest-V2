@@ -13,6 +13,6 @@ void turnRight() {
       }
     }
     mpower(200, -200);
-    delay(10);
+    delay(5);
   }
 }

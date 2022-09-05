@@ -1,5 +1,5 @@
 void beep(){
   digitalWrite(buzzer,HIGH);
-  delay(200);
+  delay(150);
   digitalWrite(buzzer,LOW);
 }
