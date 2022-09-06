@@ -1,3 +1,4 @@
+
 #include <QTRSensors.h>
 QTRSensors qtr;
 
@@ -23,6 +24,10 @@ int minVals[] = {412, 464, 464 , 420, 420, 560, 560, 652};
 // PID **************************************
 int lastError = 0;  // For storing PID error
 
+/*Junction turn, decision taking variables*/
+
+const bool LeftOrRight = true;
+// True means Right is prioritized, False means Left is prioratized
 
 unsigned int sensorValues[NUM_SENSORS];   // For sensor values of readLine()
 void setup() {
