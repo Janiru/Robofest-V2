@@ -2,7 +2,6 @@ bool conditionLeft = true;
 
 void turnLeft() {
   if (LeftOrRight == true) {
-    Serial.println("Turn left triggered");
     mpower(-190, -190);
     delay(40);
     mpower(0, 0);

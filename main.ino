@@ -17,8 +17,8 @@ int RmS = 3;
 
 int buzzer = 11;
 
-int baseSpeed = 190;
-int maxSpeed = 230;
+int baseSpeed = 210;
+int maxSpeed = 240;
 int minVals[] = {412, 464, 464 , 420, 420, 560, 560, 652};
 
 // PID **************************************
@@ -26,7 +26,7 @@ int lastError = 0;  // For storing PID error
 
 /*Junction turn, decision taking variables*/
 
-const bool LeftOrRight = false;
+const bool LeftOrRight = true;
 // True means Right is prioritized, False means Left is prioratized
 
 unsigned int sensorValues[NUM_SENSORS];   // For sensor values of readLine()
@@ -67,6 +67,7 @@ void setup() {
   //    qtr.calibrationOn.maximum[i] = 2500;
   //  }
   /****** Hard coded calibrations ******/
+  
 
 }
 
@@ -129,6 +130,16 @@ void loop() {
       sensorValues[3] >920 && sensorValues[4] >920 && sensorValues[5] >920 &&
       sensorValues[6] >920 && sensorValues[7] >920) {
     tJunction();
+  }
+
+  /*************** The END ******************/
+
+  if(sensorValues[0] > 920 && sensorValues[7] > 920){
+    if(sensorValues[1] > 920 && sensorValues[6] >920){
+      if(sensorValues[3] < 300 || sensorValues[4]< 300){
+        theEnd();
+      }
+    }
   }
 
 }
