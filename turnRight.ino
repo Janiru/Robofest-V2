@@ -5,7 +5,9 @@ void turnRight() {
     mpower(-190, -190);
     delay(60);
     mpower(160, -160);
+    buzzer(1);
     delay(120);
+    buzzer(0);
     while (conditionRight == true) {
       qtr.readLineBlack(sensorValues);
       if (sensorValues[0] < 300 && sensorValues[7] < 300) {
@@ -27,7 +29,9 @@ void turnRight() {
         sensorValues[3] < 300 && sensorValues[4] < 300 && sensorValues[5] < 300 &&
         sensorValues[6] < 300 && sensorValues[7] < 300) {
       mpower(200, -200);
+      buzzer(1);
       delay(250);
+      buzzer(0);
     } else {
       mpower(200, 200);
       delay(100);

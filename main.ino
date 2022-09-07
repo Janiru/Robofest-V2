@@ -15,7 +15,8 @@ int RmF = 4;
 int RmB = 5;
 int RmS = 3;
 
-int buzzer = 11;
+int buzzer1 = 11;
+int buzzerCount = 0;
 
 int baseSpeed = 210;
 int maxSpeed = 240;
@@ -55,7 +56,7 @@ void setup() {
   pinMode(RmB, OUTPUT);
   pinMode(RmS, OUTPUT);
 
-  pinMode(buzzer, HIGH);
+  pinMode(buzzer1, OUTPUT);
 
   Serial.begin(9600);
 
@@ -67,21 +68,15 @@ void setup() {
   //    qtr.calibrationOn.maximum[i] = 2500;
   //  }
   /****** Hard coded calibrations ******/
-  
+
 
 }
 
 void loop() {
-  // Take a reading
+
   unsigned int linePos = qtr.readLineBlack(sensorValues);
-
-  // Compute the error
   int error = SETPOINT - linePos;
-
-  // Compute the motor adjustment
   int adjust = error * KP + KD * (error - lastError);
-
-  // Record the current error for the next iteration
   lastError = error;
   mpower(baseSpeed - adjust, baseSpeed + adjust);
 
@@ -101,9 +96,13 @@ void loop() {
   if (sensorValues[0] < 300 && sensorValues[1] < 300 && sensorValues[2] < 300 &&
       sensorValues[3] < 300 && sensorValues[4] < 300 && sensorValues[5] < 300 &&
       sensorValues[6] < 300 && sensorValues[7] < 300) {
+    if (buzzerCount <= 15) {
+      buzzer(1);
+    } else buzzer(0);
     mpower(230, -230);
+    buzzerCount += 1;
     delay(10);
-  }
+  } else buzzerCount = 0;
 
   /******************** Right Turn  ********************/
 
@@ -126,17 +125,17 @@ void loop() {
   }
   /******************** T junction ********************/
 
-  if (sensorValues[0] >920 && sensorValues[1] >920 && sensorValues[2] >920 &&
-      sensorValues[3] >920 && sensorValues[4] >920 && sensorValues[5] >920 &&
-      sensorValues[6] >920 && sensorValues[7] >920) {
+  if (sensorValues[0] > 920 && sensorValues[1] > 920 && sensorValues[2] > 920 &&
+      sensorValues[3] > 920 && sensorValues[4] > 920 && sensorValues[5] > 920 &&
+      sensorValues[6] > 920 && sensorValues[7] > 920) {
     tJunction();
   }
 
   /*************** The END ******************/
 
-  if(sensorValues[0] > 920 && sensorValues[7] > 920){
-    if(sensorValues[1] > 920 && sensorValues[6] >920){
-      if(sensorValues[3] < 300 || sensorValues[4]< 300){
+  if (sensorValues[0] > 920 && sensorValues[7] > 920) {
+    if (sensorValues[1] > 920 && sensorValues[6] > 920) {
+      if (sensorValues[3] < 300 || sensorValues[4] < 300) {
         theEnd();
       }
     }
