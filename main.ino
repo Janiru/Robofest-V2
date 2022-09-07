@@ -26,7 +26,7 @@ int lastError = 0;  // For storing PID error
 
 /*Junction turn, decision taking variables*/
 
-const bool LeftOrRight = true;
+const bool LeftOrRight = false;
 // True means Right is prioritized, False means Left is prioratized
 
 unsigned int sensorValues[NUM_SENSORS];   // For sensor values of readLine()
@@ -122,6 +122,13 @@ void loop() {
         turnLeft();
       }
     }
+  }
+  /******************** T junction ********************/
+
+  if (sensorValues[0] >920 && sensorValues[1] >920 && sensorValues[2] >920 &&
+      sensorValues[3] >920 && sensorValues[4] >920 && sensorValues[5] >920 &&
+      sensorValues[6] >920 && sensorValues[7] >920) {
+    tJunction();
   }
 
 }
