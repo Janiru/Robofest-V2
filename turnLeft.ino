@@ -12,9 +12,7 @@ void turnLeft() {
         sensorValues[6] < 300 && sensorValues[7] < 300) {
 
       mpower(-200, 200);
-      buzzer(1);
-      delay(250);
-      buzzer(0);
+      delay(300);
     } else {
       mpower(200, 200);
       delay(100);
@@ -24,8 +22,6 @@ void turnLeft() {
     mpower(-190, -190);
     delay(40);
     mpower(-200, 200);
-    buzzer(1);
-    delay(250);
-    buzzer(0);
+    delay(300);
   }
 }

@@ -15,8 +15,7 @@ int RmF = 4;
 int RmB = 5;
 int RmS = 3;
 
-int buzzer1 = 11;
-int buzzerCount = 0;
+
 
 int baseSpeed = 210;
 int maxSpeed = 240;
@@ -31,6 +30,7 @@ const bool LeftOrRight = true;
 // True means Right is prioritized, False means Left is prioratized
 
 unsigned int sensorValues[NUM_SENSORS];   // For sensor values of readLine()
+bool first = true;
 void setup() {
   qtr.setTypeRC();
   qtr.setSensorPins((const uint8_t[]) {
@@ -55,9 +55,6 @@ void setup() {
   pinMode(RmF, OUTPUT);
   pinMode(RmB, OUTPUT);
   pinMode(RmS, OUTPUT);
-
-  pinMode(buzzer1, OUTPUT);
-
   Serial.begin(9600);
 
   /****** Hard coded calibrations ******/
@@ -75,6 +72,12 @@ void setup() {
 void loop() {
 
   unsigned int linePos = qtr.readLineBlack(sensorValues);
+  while (first == true && sensorValues[0] > 920 && sensorValues[1] > 920 && sensorValues[2] > 920 &&
+         sensorValues[3] > 920 && sensorValues[4] > 920 && sensorValues[5] > 920 && sensorValues[6] > 920 && sensorValues[7] > 920) {
+    qtr.readLineBlack(sensorValues);
+    mpower(240, 240);
+    delay(80);
+  } first = false;
   int error = SETPOINT - linePos;
   int adjust = error * KP + KD * (error - lastError);
   lastError = error;
@@ -96,14 +99,10 @@ void loop() {
   if (sensorValues[0] < 300 && sensorValues[1] < 300 && sensorValues[2] < 300 &&
       sensorValues[3] < 300 && sensorValues[4] < 300 && sensorValues[5] < 300 &&
       sensorValues[6] < 300 && sensorValues[7] < 300) {
-    if (buzzerCount <= 15) {
-      buzzer(1);
-    } else buzzer(0);
-    mpower(230, -230);
-    buzzerCount += 1;
-    delay(10);
-  } else buzzerCount = 0;
 
+    mpower(230, -230);
+    delay(10);
+  }
   /******************** Right Turn  ********************/
 
   if (sensorValues[6] > 920 || sensorValues[7] > 920) {
