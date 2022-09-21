@@ -18,7 +18,7 @@ int RmS = 3;
 
 
 int baseSpeed = 210;
-int maxSpeed = 240;
+int maxSpeed = 235;
 int minVals[] = {412, 464, 464 , 420, 420, 560, 560, 652};
 
 // PID **************************************
@@ -89,7 +89,7 @@ void loop() {
     baseSpeed = maxSpeed;
   }
   else {
-    baseSpeed = 190;
+    baseSpeed = 210;
   }
 
 
@@ -100,8 +100,8 @@ void loop() {
       sensorValues[3] < 300 && sensorValues[4] < 300 && sensorValues[5] < 300 &&
       sensorValues[6] < 300 && sensorValues[7] < 300) {
 
-    mpower(230, -230);
-    delay(10);
+    mpower(-230, 230);
+    delay(5);
   }
   /******************** Right Turn  ********************/
 
@@ -113,7 +113,7 @@ void loop() {
     }
   }
 
-  /******************** Left Turn if front is null  ********************/
+  /******************** Left Turn  ********************/
 
   if (sensorValues[0] > 920 || sensorValues[1] > 920) {
     if (sensorValues[6] < 300 || sensorValues[7] < 300) {
@@ -124,20 +124,23 @@ void loop() {
   }
   /******************** T junction ********************/
 
-  if (sensorValues[0] > 920 && sensorValues[1] > 920 && sensorValues[2] > 920 &&
-      sensorValues[3] > 920 && sensorValues[4] > 920 && sensorValues[5] > 920 &&
-      sensorValues[6] > 920 && sensorValues[7] > 920) {
-    tJunction();
+  if (sensorValues[0] > 920 || sensorValues[1] > 920) {
+    if (sensorValues[6] > 920 || sensorValues[7] > 920) {
+      if (sensorValues[3] > 920 || sensorValues[4] > 920) {
+
+        tJunction();
+      }
+    }
   }
 
   /*************** The END ******************/
 
-  if (sensorValues[0] > 920 && sensorValues[7] > 920) {
-    if (sensorValues[1] > 920 && sensorValues[6] > 920) {
-      if (sensorValues[3] < 300 || sensorValues[4] < 300) {
-        theEnd();
-      }
-    }
-  }
+  //  if (sensorValues[0] > 920 && sensorValues[7] > 920) {
+  //    if (sensorValues[1] > 920 && sensorValues[6] > 920) {
+  //      if (sensorValues[3] < 300 || sensorValues[4] < 300) {
+  //        theEnd();
+  //      }
+  //    }
+  //  }
 
 }
