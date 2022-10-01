@@ -1,10 +1,12 @@
-
+git 
 #include <QTRSensors.h>
+#include <Servo.h>
+
 QTRSensors qtr;
 
 #define SETPOINT    3500
 #define KP          0.0675
-#define KD         1.8
+#define KD         2
 #define NUM_SENSORS 8
 #define TIMEOUT     2500
 int LmF = 6;
@@ -17,8 +19,8 @@ int RmS = 3;
 
 
 
-int baseSpeed = 210;
-int maxSpeed = 235;
+int baseSpeed = 190;
+int maxSpeed = 210;
 int minVals[] = {412, 464, 464 , 420, 420, 560, 560, 652};
 
 // PID **************************************
@@ -31,7 +33,24 @@ const bool LeftOrRight = true;
 
 unsigned int sensorValues[NUM_SENSORS];   // For sensor values of readLine()
 bool first = true;
+
+//servo positions
+
+int servoRight = 0;
+int servoLeft = 180;
+int servoUp = 7;
+int servoDown = 89;
+bool boxPicked = false;
+Servo bottomServo, topServo;
 void setup() {
+
+  topServo.attach(12);
+  bottomServo.attach(11);
+
+  topServo.write(servoUp);
+  bottomServo.write(servoRight);
+  delay(1000);
+  servoDetach();
   qtr.setTypeRC();
   qtr.setSensorPins((const uint8_t[]) {
     A7, A6, A5, A4, A3, A2, A1, A0
@@ -57,16 +76,6 @@ void setup() {
   pinMode(RmS, OUTPUT);
   Serial.begin(9600);
 
-  /****** Hard coded calibrations ******/
-
-  //  for (uint8_t i = 0; i < 8; i++)
-  //  {
-  //    qtr.calibrationOn.minimum[i] = minVals[i];
-  //    qtr.calibrationOn.maximum[i] = 2500;
-  //  }
-  /****** Hard coded calibrations ******/
-
-
 }
 
 void loop() {
@@ -89,7 +98,7 @@ void loop() {
     baseSpeed = maxSpeed;
   }
   else {
-    baseSpeed = 210;
+    baseSpeed = 190;
   }
 
 
@@ -99,24 +108,24 @@ void loop() {
   if (sensorValues[0] < 300 && sensorValues[1] < 300 && sensorValues[2] < 300 &&
       sensorValues[3] < 300 && sensorValues[4] < 300 && sensorValues[5] < 300 &&
       sensorValues[6] < 300 && sensorValues[7] < 300) {
-
-    mpower(-230, 230);
+    Serial.println("dead end");
+    mpower(210, -210);
     delay(5);
   }
   /******************** Right Turn  ********************/
 
   if (sensorValues[6] > 920 || sensorValues[7] > 920) {
-    if (sensorValues[0] < 300 || sensorValues[1] < 300) {
+    if (sensorValues[0] < 300 && sensorValues[1] < 300) {
       if ( sensorValues[3] > 920 || sensorValues[4] > 920) {
         turnRight();
       }
     }
   }
 
-  /******************** Left Turn  ********************/
+  /******************** Left Turn if front is null  ********************/
 
   if (sensorValues[0] > 920 || sensorValues[1] > 920) {
-    if (sensorValues[6] < 300 || sensorValues[7] < 300) {
+    if (sensorValues[5] < 300 && sensorValues[6] < 300) {
       if ( sensorValues[3] > 920 || sensorValues[4] > 920) {
         turnLeft();
       }
@@ -124,23 +133,18 @@ void loop() {
   }
   /******************** T junction ********************/
 
-  if (sensorValues[0] > 920 || sensorValues[1] > 920) {
-    if (sensorValues[6] > 920 || sensorValues[7] > 920) {
-      if (sensorValues[3] > 920 || sensorValues[4] > 920) {
-
-        tJunction();
-      }
-    }
+  if ((sensorValues[3] > 920 || sensorValues[4] > 920) && (sensorValues[0] > 920 || sensorValues[1] > 920 || sensorValues[2] > 920) && (sensorValues[5] > 920 || sensorValues[6] > 920 || sensorValues[7] > 920)) {
+    tJunction();
   }
 
   /*************** The END ******************/
 
-  //  if (sensorValues[0] > 920 && sensorValues[7] > 920) {
-  //    if (sensorValues[1] > 920 && sensorValues[6] > 920) {
-  //      if (sensorValues[3] < 300 || sensorValues[4] < 300) {
-  //        theEnd();
-  //      }
-  //    }
-  //  }
+  if (sensorValues[0] > 920 && sensorValues[7] > 920) {
+    if (sensorValues[1] > 920 && sensorValues[6] > 920) {
+      if (sensorValues[3] < 300 || sensorValues[4] < 300) {
+        theEnd();
+      }
+    }
+  }
 
 }
